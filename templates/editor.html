@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <link href="static/css/editor.css" rel="stylesheet">
+    <div class="row">
+        <div class="col-md-8 wiki-main">
+            <div class="header-border">
+                <div class="row">
+                    <h1 class="col-md-8 page-header" id="top_title">{{ page }}</h1>
+                    <div class="col-md-4 text-md-right align-bottom">
+                        <p class="date message" id="message"></p>
+                    </div>
+                </div>
+            </div>
+            <nav>
+                <label for="page_title" hidden></label>
+                <input type="text" id="page_title" class="form-control ml-2 btn-sm input-dim" name="page_title" placeholder="Page Title..." value="{{ page }}">
+                <div style="border-right: 1px solid #b0b0b0; margin-left: 5px; margin-right: 10px; margin-bottom: 6px !important;"></div>
+                <label for="page_category" hidden></label>
+                <input type="text" id="page_category" class="form-control ml-2 btn-sm input-dim" name="category" placeholder="Page Categories..." value="{{ category }}">
+                <a class="nav-right editor-menu" onclick="returnToPage()" style="cursor: pointer;">Return To Page</a>
+                <a class="active editor-menu">Edit</a>
+                <a class="editor-menu" onclick="saveData()" style="cursor: pointer;">Save</a>
+                <a href="" class="editor-menu" onclick="saveToFile()">Export</a>
+                <a href="" class="delete editor-menu">Delete</a>
+            </nav>
+            <div class="wiki-post">
+                <div class="container">
+                    <div class="editor-backdrop">
+                      <div class="highlights"></div>
+                  </div>
+                  <label for="editor" hidden></label>
+                  <textarea id="editor" name="editorContent" placeholder="Start typing..." name="editor">{{ page_content | safe }}</textarea>
+                </div>
+                <input type="hidden" id="page" name="page" value="{{ page }}">
+                <input type="hidden" id="category" name="category" value="{{ category }}">
+            </div>
+        </div>
+
+        <aside class="order-first col-md-2 wiki-sidebar list-truncate">
+        </aside>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="static/js/editor.js"></script>
+
+    <script>
+        var $container = $('.container');
+        var $backdrop = $('.editor-backdrop');
+        var $highlights = $('.highlights');
+        var $textarea = $('#editor');
+
+        var ua = window.navigator.userAgent.toLowerCase();
+        var isIE = !!ua.match(/msie|trident\/7|edge/);
+        var isWinPhone = ua.indexOf('windows phone') !== -1;
+        var isIOS = !isWinPhone && !!ua.match(/ipad|iphone|ipod/);
+
+        function applyHighlights(text) {
+            text = text.replace(/\n$/g, '\n\n');
+
+            text = text.replace(/(^|\n)(#.*)/g, '<mark class="highlight-header">$1$2</mark>');
+
+            text = text.replace(/(^|\n)(>.*)/g, '<mark class="highlight-blockquote">$1$2</mark>');
+
+            {#text = text.replace(/(\*\*\*.*?\*\*\*)/g, '<mark class="highlight-double">$1</mark>');#}
+            {#text = text.replace(/(___.*?___)/g, '<mark class="highlight-double">$1</mark>');#}
+
+            text = text.replace(/(_.*?_)/g, '<mark class="highlight-emphasis">$1</mark>');
+            text = text.replace(/(\*.*?\*)/g, '<mark class="highlight-emphasis">$1</mark>');
+            text = text.replace(/(`.*?`)/g, '<mark class="highlight-code">$1</mark>');
+
+            text = text.replace(/<mark class="highlight-emphasis">__<\/mark>/g, '__');
+            text = text.replace(/<mark class="highlight-emphasis">\*\*<\/mark>/g, '**');
+            text = text.replace(/<mark class="highlight-code">``<\/mark>/g, '``');
+
+            text = text.replace(/(__.*?__)/g, '<mark class="highlight-strong">$1</mark>');
+            text = text.replace(/(``.*?``)/g, '<mark class="highlight-code">$1</mark>');
+            text = text.replace(/(\*\*.*?\*\*)/g, '<mark class="highlight-strong">$1</mark>');
+
+            text = text.replace(/<mark class="highlight-strong">__<mark class="highlight-emphasis">_(.*?)_<\/mark>__<\/mark>/g, '<mark class="highlight-double">___$1___</mark>');
+            text = text.replace(/<mark class="highlight-strong">\*\*<mark class="highlight-emphasis">\*(.*?)\*<\/mark>\*\*<\/mark>/g, '<mark class="highlight-double">***$1***</mark>');
+
+            text = text.replace(/\{([\s\S]*?)\}/g, function(match, content) {
+              // Remove existing <mark> tags within the content
+              content = content.replace(/<mark.*?>|<\/mark>/g, '');
+
+              // Split the content into lines and wrap each line, including { and }, in <mark> tags
+              var lines = content.split(/\r?\n/);
+              var markedLines = lines.map(function(line) {
+                return '<mark class="highlight-infobox">' + line.trim() + '</mark>';
+              });
+
+              // Join the marked lines back together, including { and }
+              return '<mark class="highlight-infobox">' + markedLines.join('\n') + '</mark>';
+            });
+
+            if (isIE) {
+                text = text.replace(/ /g, ' <wbr>');
+            }
+
+            text = text.replace(/(^|\n)([\s*]+)(?=$|\n)/g, '$1<mark class="highlight-line">$2</mark>');
+
+            return text;
+        }
+
+
+        function updateHighlights() {
+            var text = $textarea.val();
+            var highlightedText = applyHighlights(text);
+            $highlights.html(highlightedText);
+        }
+
+        function handleInput() {
+            updateHighlights();
+        }
+
+        function handleScroll() {
+            var scrollTop = $textarea.scrollTop();
+            var scrollLeft = $textarea.scrollLeft();
+
+            $backdrop.scrollTop(scrollTop);
+            $backdrop.scrollLeft(scrollLeft);
+
+            updateHighlights();
+        }
+
+        function bindEvents() {
+            $textarea.on({
+                'input': handleInput,
+                'scroll': handleScroll
+            });
+        }
+
+        function fixIOS() {
+            $highlights.css({
+                'padding-left': '+=3px',
+                'padding-right': '+=3px'
+            });
+        }
+
+        if (isIOS) {
+            fixIOS();
+        }
+
+        bindEvents();
+        updateHighlights();
+    </script>
+
+{% endblock %}

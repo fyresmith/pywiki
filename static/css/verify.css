@@ -1,0 +1,67 @@
+.otc {
+    position: relative;
+    width: 320px;
+    margin: 0 auto;
+}
+
+.otc fieldset {
+    border: 0;
+    padding: 0;
+    margin: 0;
+}
+
+.otc fieldset div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.otc legend {
+    margin: 0 auto 1em;
+    color: #073A39;
+    font-weight: bold;
+}
+
+input[type="number"] {
+    width: 2em;
+    line-height: 2; /* Adjusted line-height for vertical centering */
+    margin: 0.1em;
+    padding: 8px 0 4px;
+    font-size: 1.2em;
+    text-align: center;
+    border: 1px solid #073A39;
+    color: #073A39;
+    border-radius: 6px;
+    font-family: "Lato", sans-serif;
+    outline: none;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* 2 groups of 3 items */
+input[type="number"]:nth-child(n+4) {
+    order: 2;
+}
+
+.otc div::before {
+    content: '';
+    height: 2px;
+    width: 12px;
+    margin: 0 .25em;
+    order: 1;
+    background: #073A39;
+    border-radius: 2px;
+    opacity: 0.7;
+}
+
+.otc label {
+    display: none;
+}
+
+body {
+	background: #e8e8e8;
+}

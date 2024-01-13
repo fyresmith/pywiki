@@ -1,0 +1,98 @@
+@import url(https://fonts.googleapis.com/css?family=Source+Code+Pro);
+
+.container {
+    -webkit-text-size-adjust: none;
+    display: block;
+    margin: 0 auto;
+    margin-left: -15px;
+    transform: translateZ(0);
+    position: relative;
+    height: 80vh;
+}
+
+.editor-backdrop {
+    background-color: #f6f6f6;
+    border: 1px solid #dadada;
+    box-sizing: border-box;
+    color: transparent;
+    flex: 1;
+    font-family: "Source Code Pro", monospace !important;
+    font-size: 12px !important;
+    height: 80vh;
+    margin-top: -10px;
+    overflow: auto;
+    padding: 5px;
+    pointer-events: none;
+    position: absolute;
+    resize: none;
+    width: 100%;
+    z-index: 1;
+}
+
+#editor {
+    background-color: transparent;
+    border: 1px solid #dadada;
+    box-sizing: border-box; /* Include padding and border in the element's total height */
+    color: #2a2a2a !important;
+    display: block;
+    flex: 1;
+    font-family: "Source Code Pro", monospace;
+    font-size: 12px;
+    height: 80vh; /* 100% of the viewport height */
+    margin-top: -10px;
+    padding: 5px;
+    position: absolute;
+    resize: none;
+    width: 100%;
+    z-index: 2;
+}
+
+.highlights {
+    /*color: transparent;*/
+    padding: 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.highlight-header {
+    background-color: #b1d5e5;
+}
+
+.highlight-infobox {
+    background-color: #d2b1e5;
+}
+
+.highlight-blockquote {
+    background-color: #e5d3b1;
+}
+
+.highlight-emphasis {
+    background-color: #e5c7b1;
+}
+
+.highlight-strong {
+    background-color: #e0e5b1;
+}
+
+.highlight-double {
+    background-color: #a2e7b2 !important;
+}
+
+.highlight-strikethrough {
+    background-color: #e5b1b1;
+}
+
+.highlight-code {
+    background-color: #c6b1e5;
+}
+
+mark {
+    border-radius: 3px;
+    color: transparent !important;
+    padding: 0;
+}
+
+textarea:focus, button:focus {
+    box-shadow: none;
+    outline: none;
+}

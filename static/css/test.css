@@ -1,0 +1,79 @@
+@import url(https://fonts.googleapis.com/css?family=Source+Code+Pro);
+
+.container {
+  display: block;
+  margin: 0 auto;
+  transform: translateZ(0);
+  -webkit-text-size-adjust: none;
+}
+
+.editor-backdrop {
+    overflow: auto;
+    pointer-events: none;
+    position: absolute;
+    z-index: 1;
+    color: black;
+    background-color: #f6f6f6;
+    font-family: "Source Code Pro", monospace !important;
+    flex: 1;
+    padding: 5px;
+    font-size: 12px !important;
+    width: 100%;
+    border: 1px solid #dadada;
+    resize: none;
+    margin-top: -10px;
+    height: 80vh;
+    box-sizing: border-box;
+}
+
+#editor {
+    z-index: 2;
+    display: block;
+    position: absolute;
+    color: #2a2a2a;
+    background-color: transparent;
+    font-family: "Source Code Pro", monospace;
+    flex: 1;
+    padding: 5px;
+    font-size: 12px;
+    width: 100%;
+    border: 1px solid #dadada;
+    resize: none;
+    margin-top: -10px;
+    overflow: auto;
+    height: 80vh;
+    box-sizing: border-box;
+}
+
+.highlights {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  color: black;
+  padding: 0;
+}
+
+/*textarea {*/
+/*  display: block;*/
+/*  position: absolute;*/
+/*  z-index: 2;*/
+/*  margin: 0;*/
+/*  border: 2px solid #74637f;*/
+/*  border-radius: 0;*/
+/*  color: #444;*/
+/*  background-color: transparent;*/
+/*  overflow: auto;*/
+/*  resize: none;*/
+/*  transition: transform 1s;*/
+/*}*/
+
+mark {
+  border-radius: 3px;
+  color: black;
+  background-color: #b1d5e5;
+  padding: 0;
+}
+
+textarea:focus, button:focus {
+  outline: none;
+  box-shadow: none;
+}

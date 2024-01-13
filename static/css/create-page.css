@@ -1,0 +1,39 @@
+body {
+    height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    background-color: #fcfcfc !important;
+}
+
+.card {
+    max-width: 500px; /* Adjust the fixed width as needed */
+    background-color: #efefef !important;
+}
+
+.btn-outline-dim {
+    color: #000000 !important;
+    background-color: transparent;
+    background-image: none;
+    border-color: #000000 !important;
+}
+
+#textInput {
+    background-color: transparent;
+    color: #000000;
+    border-color: #000000 !important;
+    height: 100%;
+    width: 300px;
+}
+
+#textInput:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.btn-outline-dim:hover {
+    color: #212529 !important;
+    background-color: #000000 !important;
+    border-color: #000000 !important;
+}

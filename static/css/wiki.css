@@ -1,0 +1,601 @@
+/* General code block styling */
+code {
+    font-family: 'Roboto Mono', monospace;
+    color: #4f4f4f !important;
+    font-weight: 500;
+    font-size: 14px;
+    background-color: #f4f4f4;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    display: block;
+    margin: 15px 0;
+    overflow-x: auto;
+}
+
+/* Inline code styling */
+p code,
+li code,
+blockquote code {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* Code block with line numbers */
+.line-numbers {
+    counter-reset: line;
+}
+
+.line-numbers code {
+    position: relative;
+}
+
+.line-numbers code::before {
+    content: counter(line);
+    counter-increment: line;
+    position: absolute;
+    left: -2em;
+    text-align: right;
+    color: #888;
+}
+
+/* Blockquote styling */
+blockquote {
+    border-left: 2px solid #888;
+    padding-left: 15px;
+    margin: 15px 0;
+    font-style: italic;
+    color: #555;
+}
+
+/* Nested blockquote styling */
+blockquote blockquote {
+    border-color: #ccc;
+    padding-left: 30px;
+}
+
+*:focus {
+    outline: none;
+}
+
+table {
+    display: table;
+    border-collapse: separate;
+    box-sizing: border-box;
+    text-indent: initial;
+    border-spacing: 2px;
+}
+
+aside {
+    margin-top: 18px;
+    overflow-wrap: break-word;
+}
+
+aside ol li {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+/*!* CSS for lists within an aside with text truncation *!*/
+/*aside.list-truncate ul,*/
+/*aside.list-truncate ol {*/
+/*    margin: 0;*/
+/*    !* Remove default list margin *!*/
+/*    padding-left: 1.5em;*/
+/*    !* Add some padding for better visual appeal *!*/
+/*    list-style-type: none;*/
+/*    !* Remove list styles *!*/
+/*}*/
+
+/*!* Style list items *!*/
+/*aside.list-truncate li {*/
+/*    overflow: hidden;*/
+/*    !* Hide overflowing content within list items *!*/
+/*    white-space: nowrap;*/
+/*    !* Prevent text wrapping *!*/
+/*    text-overflow: ellipsis;*/
+/*    !* Display ellipsis (...) for truncated text *!*/
+/*}*/
+
+.wiki-input {
+    display: block;
+    width: 100%;
+    padding: 0.25rem 0.55rem;
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: #495057;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+}
+
+.wiki-btn {
+    display: inline-block;
+    font-weight: 400;
+    color: #6c757d;
+    text-align: center;
+    vertical-align: middle;
+    user-select: none;
+    background-color: transparent;
+    border: 1px solid #6c757d;
+    padding: 0.25rem 0.55rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    border-radius: 0.2rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.wiki-btn:hover {
+    color: #ffffff;
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.wiki-sidebar a {
+    font-size: 0.8rem;
+}
+
+.wiki-header {
+    line-height: 1;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.wiki-header-logo {
+    padding-left: .5rem !important;
+    font-family: "Playfair Display", Georgia, "Times New Roman", serif
+        /*rtl:Amiri, Georgia, "Times New Roman", serif*/
+    ;
+    font-weight: 700;
+    font-size: 2.25rem;
+    color: #343a40 !important;
+}
+
+.wiki-header-logo:hover {
+    text-decoration: none;
+}
+
+.toc-1 {
+    margin-left: 10px;
+}
+
+.toc-2 {
+    margin-left: 25px;
+}
+
+.toc-3 {
+    margin-left: 40px;
+}
+
+@media (min-width: 768px) {
+    .order-md-first {
+        -ms-flex-order: -1;
+        order: -1;
+    }
+}
+
+.content-container {
+    max-width: 1600px;
+    /* Adjust the value according to your preference */
+    margin-right: auto;
+    margin-left: auto;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+@media (min-width: 1600px) {
+    body {
+        background-color: #f6f6f6;
+        /* Gray background color for the entire page */
+    }
+
+    .content-container {
+        background-color: #ffffff;
+        /* White background color for the main content area */
+        position: relative;
+        padding-left: 40px;
+        padding-right: 40px;
+    }
+}
+
+.no-margin {
+    margin: 0 !important;
+}
+
+p {
+    font-size: 0.9rem;
+}
+
+hr {
+    overflow: hidden;
+}
+
+h1 {
+    font-family: "Merriweather", "Playfair Display", Georgia, "Times New Roman", serif
+        /*rtl:Amiri, Georgia, "Times New Roman", serif*/
+    ;
+    font-weight: 600;
+    font-size: 1.6rem;
+    margin-bottom: 2px;
+    display: flex;
+    align-items: flex-end;
+}
+
+h2 {
+    /*margin-top: 2rem;*/
+    font-family: "Merriweather", "Playfair Display", Georgia, "Times New Roman", serif
+        /*rtl:Amiri, Georgia, "Times New Roman", serif*/
+    ;
+    font-weight: 450;
+    font-size: 1.25rem;
+    border-bottom: 1px solid #c4c7cb !important;
+    padding-bottom: 4px;
+    overflow: hidden;
+}
+
+h3 {
+    margin-top: 2rem;
+    font-family: sans-serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+h4 {
+    margin-top: 2rem;
+    font-family: sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+h5 {
+    margin-top: 2rem;
+    font-family: sans-serif;
+    font-weight: 600;
+    font-size: 1.0rem;
+}
+
+.header-border {
+    border-bottom: 1px solid #aeb1b2 !important;
+    margin-bottom: 9px;
+}
+
+nav {
+    z-index: 10;
+    border-bottom: 1px solid #d0d1d2 !important;
+    margin-bottom: 9px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+}
+
+/*#editor {*/
+/*    color: #2a2a2a;*/
+/*    background-color: transparent;*/
+/*    font-family: "Source Code Pro", monospace;*/
+/*    flex: 1;*/
+/*    padding: 5px;*/
+/*    font-size: 12px;*/
+/*    width: 100%;*/
+/*    border: 1px solid #dadada;*/
+/*    resize: none;*/
+/*    margin-top: -10px;*/
+/*    height: 80vh; !* 100% of the viewport height *!*/
+/*    box-sizing: border-box; !* Include padding and border in the element's total height *!*/
+/*}*/
+
+nav .active {
+    color: #000000;
+    border-bottom: 2px solid #000000 !important;
+    margin-bottom: -1px; /* Adjust this value based on your design */
+    display: inline-block;
+    padding-bottom: 1px; /* Adjust this value based on your design */
+}
+
+.editor-menu {
+    margin-bottom: 0 !important;
+}
+
+.message {
+    transition: opacity 0.2s ease-in-out;
+}
+
+nav a {
+    font-size: 0.95rem;
+    color: #007bff;
+    margin-right: 0.8rem;
+    text-decoration: None;
+    border-bottom: none;
+    margin-bottom: -1px; /* Adjust this value based on your design */
+    display: inline-block;
+    padding-bottom: 1px; /* Adjust this value based on your design */
+}
+
+
+
+nav a:last-child {
+    margin-right: 0;
+}
+
+nav input[type='text'] {
+    background-color: transparent;
+    border-radius: 0;
+    border: 0;
+    height: 100%;
+    width: 20%;
+    display: inline-block;
+    padding: 0;
+    margin-left: 0 !important;
+    margin-top: 0;
+    margin-right: 5px;
+    margin-bottom: -1px !important;
+}
+
+nav input[type='text']:focus {
+    outline: none !important;
+    padding: 0 0 7px;
+    border-bottom: 2px solid #000000 !important;
+    box-shadow: none;
+}
+
+nav .delete {
+    color: #dc3545 !important;
+}
+
+nav .delete:hover {
+    border-bottom: 2px solid #dc3545 !important;
+}
+
+.nav-right {
+    margin-left: auto;
+}
+
+nav a:hover {
+    border-bottom: 2px solid #007bff;
+    text-decoration: none;
+}
+
+.date {
+    margin-top: 1.25rem;
+    margin-bottom: 2px;
+    color: #727272;
+    font-size: 0.75rem;
+    font-family: sans-serif;
+}
+
+.wiki-footer {
+    padding: 2.5rem 0;
+    color: #727272;
+    text-align: center;
+    background-color: #f9f9f9;
+    border-top: .05rem solid #e5e5e5;
+}
+
+.wiki-footer p:last-child {
+    margin-bottom: 0;
+}
+
+/* TABLE STYLING */
+
+/* Basic Table Styling */
+.table-main table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #333;
+}
+
+.table-main th, .table-main td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.table-main th {
+    background-color: #f5f5f5;
+}
+
+/* Hover effect on rows */
+.table-main tbody tr:hover {
+    background-color: #f0f0f0;
+}
+
+/* Striped rows */
+.table-main tbody tr:nth-child(even) {
+    background-color: #fff;
+}
+
+/* Table Header Styling */
+.table-main thead {
+    background-color: #333;
+    color: #fff;
+}
+
+/* Responsive Table Styling */
+@media screen and (max-width: 600px) {
+    .table-main table {
+        border: 1px solid #ddd;
+    }
+
+    .table-main th, td {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .table-main th {
+        text-align: center;
+        background-color: #f5f5f5;
+    }
+}
+
+.infobox tbody {
+    display: table-row-group;
+    vertical-align: middle;
+    border-color: inherit;
+}
+
+.infobox tr {
+    display: table-row;
+    vertical-align: inherit;
+    border-color: inherit;
+}
+
+.infobox td {
+    font-size: 0.72rem;
+    padding: 5px;
+}
+
+.infobox th {
+    font-weight: bold;
+    font-size: 0.8rem;
+    background-color: #dcd8d8;
+    padding: 5px;
+}
+
+.infobox-header, .infobox-label, .infobox-above, .infobox-full-data, .infobox-data, .infobox-below, .infobox-subheader, .infobox-image, .infobox-navbar, .infobox th, .infobox td .infobox-subtitle {
+    vertical-align: top;
+}
+
+.infobox .infobox-above, .infobox .infobox-title, .infobox caption {
+    font-weight: bold;
+    text-align: center;
+    font-size: 1.1rem;
+}
+
+.infobox .infobox-subheader {
+    padding-bottom: 1rem;
+    padding-top: 0;
+    font-size: 0.8rem;
+}
+
+.infobox .infobox-header, .infobox .infobox-subheader, .infobox .infobox-image, .infobox .infobox-full-data, .infobox .infobox-below {
+    text-align: center;
+}
+
+.infobox-subtitle, .infobox th {
+    text-align: center;
+}
+
+.infobox-label, .infobox-data, .infobox td {
+    text-align: left;
+}
+
+.infobox-label {
+    width: 33%;
+}
+
+.infobox {
+    float: right;
+    max-width: 300px;
+    /* Adjust the width according to your preference */
+    margin-left: 20px;
+    /* Adjust the margin to create space between the info box and the text */
+    /*padding: 10px;*/
+    font-size: 88%;
+    border: 1px solid #ccc;
+    background-color: #f8f8f8;
+    overflow: auto;
+    /* Add this line to enable scrolling if the content exceeds the box height */
+    clear: right;
+    /* Add this line to ensure the box does not overlap floated elements on the right */
+    width: 22em;
+}
+
+
+
+.dashboard-table {
+    border-radius: 10px;
+    overflow: hidden;
+    width: 50%;
+    padding: 20px;
+    margin: 0 auto;
+}
+
+.dashboard-table table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 10px;
+    overflow: hidden; /* Ensure the rounded corners are visible */
+}
+
+.dashboard-table th {
+    font-size: 1.2rem !important;
+    background-color: #e7e7e7;
+    text-align: center;
+    border-bottom: 1px solid #ddd !important;
+}
+
+.dashboard-table th,
+.dashboard-table td {
+    padding: 6px;
+    text-align: left;
+    font-size: 0.85rem;
+}
+
+.dashboard-table tbody tr {
+    display: flex;
+}
+
+.dashboard-table tbody tr td {
+    flex: 1;
+    text-align: left;
+}
+
+.dashboard-table tbody tr:hover {
+    cursor: pointer;
+}
+
+.dashboard-table form {
+    display: contents;
+}
+
+#bottomForm td {
+    font-weight: bold;
+    text-align: center;
+    width: 50%;
+    transition: background-color 0.2s ease;
+    background-color: #f6f6f6;
+}
+
+#bottomForm td:hover {
+    background-color: #e8f1ff !important;
+}
+
+.navbar {
+  background-color: #333;
+  color: #fff;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.hamburger-menu {
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.menu {
+  display: none;
+}
+
+.menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu li {
+  padding: 10px;
+}
+
+.menu a {
+  text-decoration: none;
+  color: #fff;
+}
+
+.menu a:hover {
+  text-decoration: underline;
+}

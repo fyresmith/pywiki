@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="dashboard-table">
+
+    <div class="btn-group-vertical w-100 mb-4">
+        <div class="text-center w-100 rounded-top p-1" style="font-family: 'Lato', sans-serif; font-size: 1.3rem; background-color: #d7d7d7; font-weight: 700;">All Pages and Categories</div>
+        <a href="/create-page" class="btn btn-sm btn-dark w-100">Create New Page</a>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            {% for category in categories.keys() %}
+                <div class="col-md-6">
+                    {% if category == '' %}
+                        <h2 class="font-weight-bold">Uncategorized</h2>
+                    {% else %}
+                        <h2 class="font-weight-bold">{{ category }}</h2>
+                    {% endif %}
+                    <ul>
+                        {% for page in categories[category] %}
+                            <li>
+                                <a href="/page?page={{ page }}">{{ page }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
