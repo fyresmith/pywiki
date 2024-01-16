@@ -17,7 +17,7 @@ import logging
 from backup import backup_db
 
 app = Flask(__name__)
-app.secret_key = 'cb55906271b159debefe6e7b7786a22ade3fc1f0be5c38d39b8d8f457c856c70'
+app.secret_key = 'INSERT_SECRET_KEY_HERE'
 
 logging.basicConfig(
     level=logging.INFO,
