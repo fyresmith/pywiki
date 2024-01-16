@@ -1,8 +1,17 @@
+import logging
 import os
-import shutil
 import threading
 from datetime import datetime, timedelta
-import logging
+
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
+
+LOCAL_BACKUP_FOLDER = 'backups'
+LOCAL_DATA_FOLDER = 'data'
+DB_PATH = f'{LOCAL_DATA_FOLDER}/data.db'
+BACKUP_FOLDER_ID = '19pv66AwQwg0CZ5LPPDY6OJkMeoDFqypA'
+SERVICE_CREDENTIALS = 'static/secrets/service-credentials.json'
 
 # Configure logging
 logging.basicConfig(
@@ -16,88 +25,155 @@ logging.basicConfig(
 
 log = logging.getLogger("app")
 
-# Path configurations
-DB_PATH = 'data/data.db'
-BACKUP_DIR = 'backups'
-
 
 def backup_db():
-    """
-    Initiates the database backup process:
-    - Creates a 'backups' directory if it doesn't exist.
-    - Generates a timestamp for the backup file.
-    - Copies the current database to the backup file.
-    - Logs successful backup.
-    - Schedules the next backup after 24 hours.
-    - Removes backups older than three days.
+    # Load credentials from the JSON file
+    credentials = service_account.Credentials.from_service_account_file(
+        SERVICE_CREDENTIALS,
+        scopes=['https://www.googleapis.com/auth/drive']
+    )
 
-    :return: None
-    """
+    # Build the Drive API service
+    drive_service = build('drive', 'v3', credentials=credentials)
+
+    # Generate timestamp
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+
+    # Extract file details
+    file_name, file_extension = os.path.splitext(os.path.basename(DB_PATH))
+
+    # Create new filename with timestamp
+    new_file_name = f'{file_name}_{timestamp}{file_extension}'
+
+    # Set file metadata and content
+    file_metadata = {'name': new_file_name, 'parents': [BACKUP_FOLDER_ID]}
+    media = MediaFileUpload(DB_PATH, resumable=True)
+
+    # Upload the file
+    file = drive_service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+
+    backup_thread = threading.Timer(24 * 3600, backup_db)
+    backup_thread.name = "backup_db"
+    backup_thread.start()
+
+    log.info(f'File {file_name} uploaded to Google Drive with timestamped filename: {new_file_name} (ID: {file["id"]})')
+
+
+def download_latest_backup():
+    # Load credentials from the JSON file
+    credentials = service_account.Credentials.from_service_account_file(
+        SERVICE_CREDENTIALS,
+        scopes=['https://www.googleapis.com/auth/drive']
+    )
+
+    # Build the Drive API service
+    drive_service = build('drive', 'v3', credentials=credentials)
+
     try:
-        # Create 'backups' directory if it doesn't exist
-        if not os.path.exists(BACKUP_DIR):
-            os.makedirs(BACKUP_DIR)
+        # List files in the backup folder
+        results = drive_service.files().list(q=f"'{BACKUP_FOLDER_ID}' in parents", orderBy='createdTime desc', fields='files(id, name)').execute()
+        files = results.get('files', [])
 
-        # Generate a timestamp for the backup file
-        timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
-        backup_file = f"{BACKUP_DIR}/backup_{timestamp}.db"
+        if not files:
+            logging.warning('No files found in the backup folder.')
+            return
 
-        # Copy the current database to the backup file
-        shutil.copyfile(DB_PATH, backup_file)
+        # Get the most recently uploaded file
+        latest_backup = files[0]
+        latest_backup_id = latest_backup['id']
+        latest_backup_name = latest_backup['name']
 
-        # Log successful backup
-        log.info(f"Backup created: {backup_file}")
+        # Print the name of the latest backup
+        logging.info(f'The most recently uploaded backup file is: {latest_backup_name} (ID: {latest_backup_id})')
 
-        # Schedule the next backup after 24 hours
-        threading.Timer(24 * 3600, backup_db).start()
+        # Download the latest backup to the local folder
+        local_backup_path = os.path.join(LOCAL_BACKUP_FOLDER, latest_backup_name)
+        request = drive_service.files().get_media(fileId=latest_backup_id)
+        with open(local_backup_path, 'wb') as local_file:
+            downloader = MediaIoBaseDownload(local_file, request)
+            done = False
+            while not done:
+                status, done = downloader.next_chunk()
 
-        # Remove backups older than three days
-        remove_old_backups()
+        logging.info(f'Latest backup downloaded to: {local_backup_path}')
+
     except Exception as e:
-        log.error(f"Error during backup: {e}")
+        logging.error(f'Error during backup download: {e}')
 
 
-def remove_old_backups():
-    """
-    Removes backups older than three days from the 'backups' directory.
+def delete_old_backups():
+    # Load credentials from the JSON file
+    credentials = service_account.Credentials.from_service_account_file(
+        SERVICE_CREDENTIALS,
+        scopes=['https://www.googleapis.com/auth/drive']
+    )
 
-    :return: None
-    """
+    # Build the Drive API service
+    drive_service = build('drive', 'v3', credentials=credentials)
+
     try:
-        current_time = datetime.now()
-        for file_name in os.listdir(BACKUP_DIR):
-            file_path = os.path.join(BACKUP_DIR, file_name)
-            creation_time = datetime.fromtimestamp(os.path.getctime(file_path))
+        # Calculate the date 2 minutes ago in UTC
+        deletion_date = datetime.utcnow() - timedelta(minutes=3)
 
-            # Remove backups older than three days
-            if current_time - creation_time > timedelta(days=3):
-                os.remove(file_path)
-                log.info(f"Backup removed (older than three days): {file_path}")
+        # List files in the backup folder
+        results = drive_service.files().list(q=f"'{BACKUP_FOLDER_ID}' in parents", fields='files(id, name, createdTime)').execute()
+        files = results.get('files', [])
+
+        if not files:
+            log.info('No files found in the backup folder.')
+            return
+
+        # Identify and delete files older than two minutes
+        for file in files:
+            created_time_utc = datetime.strptime(file['createdTime'], "%Y-%m-%dT%H:%M:%S.%fZ")
+            if created_time_utc < deletion_date:
+                drive_service.files().delete(fileId=file['id']).execute()
+                log.info(f'Deleted file: {file["name"]} (ID: {file["id"]})')
+
+        log.info('Old backups deleted successfully.')
+
     except Exception as e:
-        log.error(f"Error during removing old backups: {e}")
+        log.error(f'Error during old backups deletion: {e}')
 
 
 def rollback_db():
-    """
-    Rolls back the database to the most recent backup.
+    # Load credentials from the JSON file
+    credentials = service_account.Credentials.from_service_account_file(
+        SERVICE_CREDENTIALS,
+        scopes=['https://www.googleapis.com/auth/drive']
+    )
 
-    :return: None
-    """
+    # Build the Drive API service
+    drive_service = build('drive', 'v3', credentials=credentials)
+
     try:
-        # Find the most recent backup
-        backup_files = [f for f in os.listdir(BACKUP_DIR) if f.endswith('.db')]
-        if backup_files:
-            latest_backup = max(backup_files, key=os.path.getctime)
-            backup_path = os.path.join(BACKUP_DIR, latest_backup)
+        # List files in the backup folder
+        results = drive_service.files().list(q=f"'{BACKUP_FOLDER_ID}' in parents", orderBy='createdTime desc', fields='files(id, name)').execute()
+        files = results.get('files', [])
 
-            # Replace the current database with the backup
-            shutil.copyfile(backup_path, DB_PATH)
-            log.info(f"Database rolled back to: {latest_backup}")
-        else:
-            log.warning("No backups available for rollback")
+        if not files:
+            log.warning('No backup files found in the backup folder.')
+            return
+
+        # Get the most recently uploaded backup file
+        latest_backup = files[0]
+        latest_backup_id = latest_backup['id']
+        latest_backup_name = latest_backup['name']
+
+        # Download the latest backup to the local folder
+        local_backup_path = os.path.join(LOCAL_BACKUP_FOLDER, latest_backup_name)
+        request = drive_service.files().get_media(fileId=latest_backup_id)
+        with open(local_backup_path, 'wb') as local_file:
+            downloader = MediaIoBaseDownload(local_file, request)
+            done = False
+            while not done:
+                status, done = downloader.next_chunk()
+
+        # Replace the 'data.db' file with the latest backup
+        local_data_db_path = os.path.join(LOCAL_DATA_FOLDER, 'data.db')
+        os.replace(local_backup_path, local_data_db_path)
+
+        log.info(f'Rollback successful. Latest backup {latest_backup_name} applied to data.db.')
+
     except Exception as e:
-        log.error(f"Error during rollback: {e}")
-
-
-# Example: Schedule a nightly rollback
-# threading.Timer(24 * 3600, rollback_db).start()
+        log.error(f'Error during rollback: {e}')

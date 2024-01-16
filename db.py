@@ -41,9 +41,9 @@ class DB:
             try:
                 # Attempt to connect to the SQLite database
                 cls.__instance.connection = sqlite3.connect(f'data/data.db')
-                print('Connection to SQLite DB successful')
+                log.info('Connection to SQLite DB successful')
             except Error as e:
-                print(f'The error "{e}" occurred')
+                log.info(f'The error "{e}" occurred')
 
         return cls.__instance
 
@@ -76,9 +76,9 @@ class DB:
         try:
             # Attempt to connect to the SQLite database
             connection = sqlite3.connect(path)
-            print('Connection to SQLite DB successful')
+            log.info('Connection to SQLite DB successful')
         except Error as e:
-            print(f'The error "{e}" occurred')
+            log.info(f'The error "{e}" occurred')
 
         return connection
 

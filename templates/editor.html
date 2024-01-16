@@ -39,6 +39,23 @@
         </div>
 
         <aside class="order-first col-md-2 wiki-sidebar list-truncate">
+            <h5 class="">Highlights Key</h5>
+            <hr class="no-margin pb-2">
+            <ol class="list-unstyled mb-0">
+                <li class="highlight-infobox text-center">Infobox</li>
+                <li class="highlight-table text-center">Table</li>
+                <li class="highlight-list text-center">List</li>
+                <li class="highlight-header text-center">Header</li>
+                <li class="highlight-emphasis text-center">Emphasized Text</li>
+                <li class="highlight-strong text-center">Bolded Text</li>
+                <li class="highlight-double text-center">Bolded & Emphasized Text</li>
+                <li class="highlight-link text-center">Link</li>
+                <li class="highlight-blockquote text-center">Blockquote</li>
+                <li class="highlight-code text-center">Code Block</li>
+                <li class="highlight-footnote text-center">Footnote</li>
+                <hr />
+                <li>If a line or piece of text within a line turns one of the above colors, it will render as the item listed.</li>
+            </ol>
         </aside>
     </div>
 
@@ -46,105 +63,163 @@
     <script src="static/js/editor.js"></script>
 
     <script>
-        var $container = $('.container');
-        var $backdrop = $('.editor-backdrop');
-        var $highlights = $('.highlights');
-        var $textarea = $('#editor');
+        (function($) {
+            var $container = $('.container');
+            var $backdrop = $('.editor-backdrop');
+            var $highlights = $('.highlights');
+            var $textarea = $('#editor');
 
-        var ua = window.navigator.userAgent.toLowerCase();
-        var isIE = !!ua.match(/msie|trident\/7|edge/);
-        var isWinPhone = ua.indexOf('windows phone') !== -1;
-        var isIOS = !isWinPhone && !!ua.match(/ipad|iphone|ipod/);
+            var ua = window.navigator.userAgent.toLowerCase();
+            var isIE = !!ua.match(/msie|trident\/7|edge/);
+            var isWinPhone = ua.indexOf('windows phone') !== -1;
+            var isIOS = !isWinPhone && !!ua.match(/ipad|iphone|ipod/);
 
-        function applyHighlights(text) {
-            text = text.replace(/\n$/g, '\n\n');
+            function applyHighlights(text) {
+                text = text.replace(/\n$/g, '\n\n');
 
-            text = text.replace(/(^|\n)(#.*)/g, '<mark class="highlight-header">$1$2</mark>');
+                text = text.replace(/(^|\n)(#.*)/g, function(match, start, header) {
+                  // If the line is only a header, apply the class directly, otherwise wrap it in a mark tag
+                  return header.trim().startsWith('#') ? start + '<mark class="highlight-header">' + header + '</mark>' : start + header;
+                });
 
-            text = text.replace(/(^|\n)(>.*)/g, '<mark class="highlight-blockquote">$1$2</mark>');
+                text = text.replace(/(^|\n)(\|.*\|)/g, function(match, start, tableRow) {
+                  // If the line is only a table row, apply the class directly, otherwise leave it unchanged
+                  return tableRow.trim().startsWith('|') ? start + '<mark class="highlight-table">' + tableRow + '</mark>' : start + tableRow;
+                });
 
-            {#text = text.replace(/(\*\*\*.*?\*\*\*)/g, '<mark class="highlight-double">$1</mark>');#}
-            {#text = text.replace(/(___.*?___)/g, '<mark class="highlight-double">$1</mark>');#}
+                text = text.replace(/(^|\n)(=.*=)/g, function(match, start, header) {
+                  // If the line is only a header, apply the class directly, otherwise leave it unchanged
+                  return header.trim().startsWith('=') ? start + '<mark class="highlight-table">' + header + '</mark>' : start + header;
+                });
 
-            text = text.replace(/(_.*?_)/g, '<mark class="highlight-emphasis">$1</mark>');
-            text = text.replace(/(\*.*?\*)/g, '<mark class="highlight-emphasis">$1</mark>');
-            text = text.replace(/(`.*?`)/g, '<mark class="highlight-code">$1</mark>');
+                text = text.replace(/(^|\n)(>.*)/g, function(match, start, blockquote) {
+                  // If the line is only a blockquote, apply the class directly, otherwise wrap it in a mark tag
+                  return blockquote.trim().startsWith('> ') ? start + '<mark class="highlight-blockquote">' + blockquote + '</mark>' : start + blockquote;
+                });
 
-            text = text.replace(/<mark class="highlight-emphasis">__<\/mark>/g, '__');
-            text = text.replace(/<mark class="highlight-emphasis">\*\*<\/mark>/g, '**');
-            text = text.replace(/<mark class="highlight-code">``<\/mark>/g, '``');
+                text = text.replace(/(^|\n)(\*.*)/g, function(match, start, list_item) {
+                  // If the line is only a blockquote, apply the class directly, otherwise wrap it in a mark tag
+                  return list_item.trim().startsWith('* ') ? start + '<mark class="highlight-list">' + list_item + '</mark>' : start + list_item;
+                });
 
-            text = text.replace(/(__.*?__)/g, '<mark class="highlight-strong">$1</mark>');
-            text = text.replace(/(``.*?``)/g, '<mark class="highlight-code">$1</mark>');
-            text = text.replace(/(\*\*.*?\*\*)/g, '<mark class="highlight-strong">$1</mark>');
+                text = text.replace(/(^|\n)(\d+\..*)/g, function(match, start, numbered_item) {
+                  // If the line starts with a number and a period, apply the class directly, otherwise leave it unchanged
+                  return start + '<mark class="highlight-list">' + numbered_item.trim() + '</mark>';
+                });
 
-            text = text.replace(/<mark class="highlight-strong">__<mark class="highlight-emphasis">_(.*?)_<\/mark>__<\/mark>/g, '<mark class="highlight-double">___$1___</mark>');
-            text = text.replace(/<mark class="highlight-strong">\*\*<mark class="highlight-emphasis">\*(.*?)\*<\/mark>\*\*<\/mark>/g, '<mark class="highlight-double">***$1***</mark>');
+                text = text.replace(/\[\^(.*?)\]/g, '<mark class="highlight-footnote">[^$1]</mark>');
 
-            text = text.replace(/\{([\s\S]*?)\}/g, function(match, content) {
-              // Remove existing <mark> tags within the content
-              content = content.replace(/<mark.*?>|<\/mark>/g, '');
+                text = text.replace(/(_.*?_)/g, '<mark class="highlight-emphasis">$1</mark>');
+                text = text.replace(/(\*.*?\*)/g, '<mark class="highlight-emphasis">$1</mark>');
+                text = text.replace(/(`.*?`)/g, '<mark class="highlight-code">$1</mark>');
+                text = text.replace(/\[([^[\]]+)\]\(([^)]+)\)/g, '<mark class="highlight-link">[$1]($2)</mark>');
 
-              // Split the content into lines and wrap each line, including { and }, in <mark> tags
-              var lines = content.split(/\r?\n/);
-              var markedLines = lines.map(function(line) {
-                return '<mark class="highlight-infobox">' + line.trim() + '</mark>';
-              });
+                text = text.replace(/<mark class="highlight-emphasis">__<\/mark>/g, '__');
+                text = text.replace(/<mark class="highlight-emphasis">\*\*<\/mark>/g, '**');
+                text = text.replace(/<mark class="highlight-code">``<\/mark>/g, '``');
 
-              // Join the marked lines back together, including { and }
-              return '<mark class="highlight-infobox">' + markedLines.join('\n') + '</mark>';
-            });
+                text = text.replace(/(__.*?__)/g, '<mark class="highlight-strong">$1</mark>');
+                text = text.replace(/(``.*?``)/g, '<mark class="highlight-code">$1</mark>');
+                text = text.replace(/(\*\*.*?\*\*)/g, '<mark class="highlight-strong">$1</mark>');
 
-            if (isIE) {
-                text = text.replace(/ /g, ' <wbr>');
+                text = text.replace(/<mark class="highlight-strong">__<mark class="highlight-emphasis">_(.*?)_<\/mark>__<\/mark>/g, '<mark class="highlight-double">___$1___</mark>');
+                text = text.replace(/<mark class="highlight-strong">\*\*<mark class="highlight-emphasis">\*(.*?)\*<\/mark>\*\*<\/mark>/g, '<mark class="highlight-double">***$1***</mark>');
+
+                text = text.replace(/\{([\s\S]*?)\}/g, function(match, content) {
+                  // Remove existing <mark> tags within the content
+                  content = content.replace(/<mark.*?>|<\/mark>/g, '');
+
+                  // Split the content into lines and wrap each line, including { and }, in <mark> tags
+                  var lines = content.split(/\r?\n/);
+                  var markedLines = lines.map(function(line) {
+                    return '<mark class="highlight-infobox">' + line.trim() + '</mark>';
+                  });
+
+                  // Join the marked lines back together, including { and }
+                  return markedLines.join('\n');
+                });
+
+                return text;
             }
 
-            text = text.replace(/(^|\n)([\s*]+)(?=$|\n)/g, '$1<mark class="highlight-line">$2</mark>');
 
-            return text;
-        }
+            function updateHighlights() {
+                var text = $textarea.val();
+                var highlightedText = applyHighlights(text);
+                $highlights.html(highlightedText);
+            }
 
+            function handleInput() {
+                updateHighlights();
+            }
 
-        function updateHighlights() {
-            var text = $textarea.val();
-            var highlightedText = applyHighlights(text);
-            $highlights.html(highlightedText);
-        }
+            function handleScroll() {
+                var scrollTop = $textarea.scrollTop();
+                var scrollLeft = $textarea.scrollLeft();
 
-        function handleInput() {
+                $backdrop.scrollTop(scrollTop);
+                $backdrop.scrollLeft(scrollLeft);
+
+                updateHighlights();
+            }
+
+            function bindEvents() {
+                $textarea.on({
+                    'input': handleInput,
+                    'scroll': handleScroll
+                });
+            }
+
+            function fixIOS() {
+                $highlights.css({
+                    'padding-left': '+=3px',
+                    'padding-right': '+=3px'
+                });
+            }
+
+            if (isIOS) {
+                fixIOS();
+            }
+
+            bindEvents();
             updateHighlights();
-        }
+        })(jQuery);
 
-        function handleScroll() {
-            var scrollTop = $textarea.scrollTop();
-            var scrollLeft = $textarea.scrollLeft();
+        function sendPostRequest() {
+          console.log("Sending Post Request...");
+          const page = '{{ page }}';
 
-            $backdrop.scrollTop(scrollTop);
-            $backdrop.scrollLeft(scrollLeft);
+          // Define the request parameters
+          const requestOptions = {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ page }),
+          };
 
-            updateHighlights();
-        }
+          // Send the POST request
+          fetch('/active-editor', requestOptions)
+            .then(response => {
+              if (!response.ok) {
+                console.log("HTTP error", response);
+                throw new Error(`HTTP error! Status: ${response.status}`);
+              }
 
-        function bindEvents() {
-            $textarea.on({
-                'input': handleInput,
-                'scroll': handleScroll
+              return response.json();
+            })
+            .then(data => {
+              console.log('POST request successful:', data);
+            })
+            .catch(error => {
+              console.error('Error sending POST request:', error.message);
             });
+
+          setTimeout(sendPostRequest, 5000);
         }
 
-        function fixIOS() {
-            $highlights.css({
-                'padding-left': '+=3px',
-                'padding-right': '+=3px'
-            });
-        }
-
-        if (isIOS) {
-            fixIOS();
-        }
-
-        bindEvents();
-        updateHighlights();
+        // Initial call to start the process
+        sendPostRequest();
     </script>
 
 {% endblock %}

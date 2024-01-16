@@ -55,41 +55,75 @@
 }
 
 .highlight-header {
-    background-color: #b1d5e5;
+    background-color: #92dcff;
+    border-radius: 3px;
 }
 
 .highlight-infobox {
-    background-color: #d2b1e5;
+    background-color: #88ffaf;
+    border-radius: 3px;
 }
 
 .highlight-blockquote {
     background-color: #e5d3b1;
+    border-radius: 3px;
 }
 
 .highlight-emphasis {
-    background-color: #e5c7b1;
+    background-color: #ffc99c;
+    border-radius: 3px;
 }
 
 .highlight-strong {
-    background-color: #e0e5b1;
+    background-color: #7bdcce;
+    border-radius: 3px;
+}
+
+.highlight-footnote {
+    background-color: #ffd134;
+    border-radius: 3px;
 }
 
 .highlight-double {
     background-color: #a2e7b2 !important;
+    border-radius: 3px;
 }
 
 .highlight-strikethrough {
     background-color: #e5b1b1;
+    border-radius: 3px;
 }
 
 .highlight-code {
-    background-color: #c6b1e5;
+    background-color: #ccaaff;
+    border-radius: 3px;
 }
 
+.highlight-line {
+    background-color: #e39b9b;
+    border-radius: 3px;
+}
+
+.highlight-list {
+    background-color: #e8c3d0;
+    border-radius: 3px;
+}
+
+.highlight-link {
+    background-color: #8cb9ff;
+    border-radius: 3px;
+}
+
+.highlight-table {
+    background-color: #ffafaf;
+    border-radius: 3px;
+}
+
+
 mark {
+  padding: 0;
     border-radius: 3px;
     color: transparent !important;
-    padding: 0;
 }
 
 textarea:focus, button:focus {
