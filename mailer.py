@@ -2,7 +2,7 @@ from trycourier import Courier
 
 
 def send_email(address: str, code: str):
-    client = Courier(auth_token="pk_prod_5S9QWJR497MV11GYQWBCGC5Y8K9H")
+    client = Courier(auth_token="INSERT_COURIER_KEY_HERE")
 
     resp = client.send_message(
         message={
