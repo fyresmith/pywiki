@@ -10,7 +10,7 @@ from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
 LOCAL_BACKUP_FOLDER = 'backups'
 LOCAL_DATA_FOLDER = 'data'
 DB_PATH = f'{LOCAL_DATA_FOLDER}/data.db'
-BACKUP_FOLDER_ID = '19pv66AwQwg0CZ5LPPDY6OJkMeoDFqypA'
+BACKUP_FOLDER_ID = 'DRIVE_FOLDER_ID'
 SERVICE_CREDENTIALS = 'static/secrets/service-credentials.json'
 
 # Configure logging
