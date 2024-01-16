@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!------ Include the above in your HEAD tag ---------->
+
+    <div class="page-wrap d-flex flex-row align-items-center">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-12 text-center">
+                    <span class="mt-4 display-1 d-block">404</span>
+                    <div class="mb-2 lead">The page you are looking for was not found.</div>
+                    <p class="mb-4">Here are some cute baby pandas instead.</p>
+                    <img class="mt-2 mx-auto rounded" src="static/images/404.jpg" alt="Cute Baby Pandas" style="display: block;">
+                    <a href="/" class="btn btn-link">Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

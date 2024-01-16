@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wiki Editor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <link href="static/css/create-page.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="card">
+        <form action="/delete-page?page={{ page }}" method="POST" class="card-body d-flex flex-column align-items-center justify-content-center">
+            <h5 class="card-title" style="color: #000000">Re-Enter Page Title</h5>
+            <p class="text-secondary mb-0">Please type out the entire name for page: '<strong>{{ page }}</strong>' in order to delete it.</p>
+            {% if message != '' %}
+                <p class="text-danger">{{ message }}</p>
+            {% endif %}
+            <label for="textInput" class="sr-only">Page Title</label>
+            <input type="text" id="textInput" name="pageTitle" class="form-control mb-2 mt-0 outline-secondary" placeholder="Retype Page Title..." required>
+            <button type="submit" class="btn btn-sm mt-2 btn-outline-danger">Delete Page (<u>Permanently!</u>)</button>
+            <a href="/page?page={{ page }}" style="font-size: 12px;" class="mt-2">Return to Page</a>
+        </form>
+    </div>
+
+</body>
+</html>
