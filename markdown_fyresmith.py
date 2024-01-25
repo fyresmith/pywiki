@@ -5,6 +5,8 @@ from markdown.preprocessors import Preprocessor
 from markdown.extensions import Extension
 from markdown.extensions.extra import ExtraExtension
 from bs4 import BeautifulSoup
+from dotenv import load_dotenv
+load_dotenv()
 
 DEFAULT_MARKDOWN = """
 {
@@ -384,8 +386,8 @@ def to_html(markdown_string, date, editor, title, page_list, role):
         <div class="col-md-8 wiki-main">
             <div class="header-border">
                 <div class="row">
-                    <h1 class="col-md-8 page-header" id="{header_id}">{title}</h1>
-                    <div class="col-md-4 text-md-right align-bottom">
+                    <h1 class="page-header" id="{header_id}">{title}</h1>
+                    <div class="date-wrapper">
                         <p class="date">Edited <span class="text-success">{date}</span> by <span class="text-primary">{editor}</span></p>
                     </div>
                 </div>
@@ -394,7 +396,7 @@ def to_html(markdown_string, date, editor, title, page_list, role):
     """
 
     if role == 'admin' or role == 'editor':
-        result += """
+        result += f"""
             <a href="/" class="">Home</a>
             <a href="" class="active">Page</a>
             <a href="editor?page={title}" class="nav-right">Edit</a>
@@ -413,7 +415,7 @@ def to_html(markdown_string, date, editor, title, page_list, role):
                 {html_output}
             </div>
             </div>
-            <aside class ="order-first col-md-2 wiki-sidebar list-truncate" >
+            <aside class ="order-first wiki-sidebar" >
               <h5 class="">Contents</h5>
               <hr class="no-margin pb-2">
               <ol class="list-unstyled mb-0">
@@ -428,7 +430,7 @@ def to_html(markdown_string, date, editor, title, page_list, role):
     result += """
         </ol>
     </aside>
-    <aside class="col-md-2 wiki-sidebar list-truncate">
+    <aside class="wiki-sidebar list-truncate">
         <h5 class="">Recently Edited Pages</h5>
         <hr class="no-margin pb-2">
         <ol class="list-unstyled mb-0">
