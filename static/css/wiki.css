@@ -1,206 +1,8 @@
-/* General code block styling */
-code {
-    font-family: 'Roboto Mono', monospace;
-    color: #4f4f4f !important;
-    font-weight: 500;
-    font-size: 14px;
-    background-color: #f4f4f4;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    display: block;
-    margin: 15px 0;
-    overflow-x: auto;
-}
-
-/* Inline code styling */
-p code,
-li code,
-blockquote code {
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-
-/* Code block with line numbers */
-.line-numbers {
-    counter-reset: line;
-}
-
-.line-numbers code {
-    position: relative;
-}
-
-.line-numbers code::before {
-    content: counter(line);
-    counter-increment: line;
-    position: absolute;
-    left: -2em;
-    text-align: right;
-    color: #888;
-}
-
-/* Blockquote styling */
-blockquote {
-    border-left: 2px solid #888;
-    padding-left: 15px;
-    margin: 15px 0;
-    font-style: italic;
-    color: #555;
-}
-
-/* Nested blockquote styling */
-blockquote blockquote {
-    border-color: #ccc;
-    padding-left: 30px;
-}
-
 *:focus {
     outline: none;
 }
 
-table {
-    display: table;
-    border-collapse: separate;
-    box-sizing: border-box;
-    text-indent: initial;
-    border-spacing: 2px;
-}
-
-aside {
-    margin-top: 18px;
-    overflow-wrap: break-word;
-}
-
-aside ol li {
-    margin-top: 5px;
-    margin-bottom: 5px;
-}
-
-/*!* CSS for lists within an aside with text truncation *!*/
-/*aside.list-truncate ul,*/
-/*aside.list-truncate ol {*/
-/*    margin: 0;*/
-/*    !* Remove default list margin *!*/
-/*    padding-left: 1.5em;*/
-/*    !* Add some padding for better visual appeal *!*/
-/*    list-style-type: none;*/
-/*    !* Remove list styles *!*/
-/*}*/
-
-/*!* Style list items *!*/
-/*aside.list-truncate li {*/
-/*    overflow: hidden;*/
-/*    !* Hide overflowing content within list items *!*/
-/*    white-space: nowrap;*/
-/*    !* Prevent text wrapping *!*/
-/*    text-overflow: ellipsis;*/
-/*    !* Display ellipsis (...) for truncated text *!*/
-/*}*/
-
-.wiki-input {
-    display: block;
-    width: 100%;
-    padding: 0.25rem 0.55rem;
-    font-size: 0.9rem;
-    font-weight: 400;
-    color: #495057;
-    background-color: #fff;
-    border: 1px solid #ced4da;
-    border-radius: .25rem;
-}
-
-.wiki-btn {
-    display: inline-block;
-    font-weight: 400;
-    color: #6c757d;
-    text-align: center;
-    vertical-align: middle;
-    user-select: none;
-    background-color: transparent;
-    border: 1px solid #6c757d;
-    padding: 0.25rem 0.55rem;
-    font-size: 0.875rem;
-    line-height: 1.5;
-    border-radius: 0.2rem;
-    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-}
-
-.wiki-btn:hover {
-    color: #ffffff;
-    background-color: #6c757d;
-    border-color: #6c757d;
-}
-
-.wiki-sidebar a {
-    font-size: 0.8rem;
-}
-
-.wiki-header {
-    line-height: 1;
-    border-bottom: 1px solid #e5e5e5;
-}
-
-.wiki-header-logo {
-    padding-left: .5rem !important;
-    font-family: "Playfair Display", Georgia, "Times New Roman", serif
-        /*rtl:Amiri, Georgia, "Times New Roman", serif*/
-    ;
-    font-weight: 700;
-    font-size: 2.25rem;
-    color: #343a40 !important;
-}
-
-.wiki-header-logo:hover {
-    text-decoration: none;
-}
-
-.toc-1 {
-    margin-left: 10px;
-}
-
-.toc-2 {
-    margin-left: 25px;
-}
-
-.toc-3 {
-    margin-left: 40px;
-}
-
-@media (min-width: 768px) {
-    .order-md-first {
-        -ms-flex-order: -1;
-        order: -1;
-    }
-}
-
-.content-container {
-    max-width: 1600px;
-    /* Adjust the value according to your preference */
-    margin-right: auto;
-    margin-left: auto;
-    padding-left: 20px;
-    padding-right: 20px;
-}
-
-@media (min-width: 1600px) {
-    body {
-        background-color: #f6f6f6;
-        /* Gray background color for the entire page */
-    }
-
-    .content-container {
-        background-color: #ffffff;
-        /* White background color for the main content area */
-        position: relative;
-        padding-left: 40px;
-        padding-right: 40px;
-    }
-}
-
-.no-margin {
-    margin: 0 !important;
-}
+/* General HTML elements */
 
 p {
     font-size: 0.9rem;
@@ -222,10 +24,7 @@ h1 {
 }
 
 h2 {
-    /*margin-top: 2rem;*/
-    font-family: "Merriweather", "Playfair Display", Georgia, "Times New Roman", serif
-        /*rtl:Amiri, Georgia, "Times New Roman", serif*/
-    ;
+    font-family: "Merriweather", "Playfair Display", Georgia, "Times New Roman", serif;
     font-weight: 450;
     font-size: 1.25rem;
     border-bottom: 1px solid #c4c7cb !important;
@@ -254,10 +53,262 @@ h5 {
     font-size: 1.0rem;
 }
 
+table {
+    display: table;
+    border-collapse: separate;
+    box-sizing: border-box;
+    text-indent: initial;
+    border-spacing: 2px;
+}
+
+code {
+    font-family: 'Roboto Mono', monospace;
+    color: #4f4f4f !important;
+    font-weight: 500;
+    font-size: 14px;
+    background-color: #f4f4f4;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    display: block;
+    margin: 15px 0;
+    overflow-x: auto;
+}
+
+p code,
+li code,
+blockquote code {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+blockquote {
+    border-left: 2px solid #888;
+    padding-left: 15px;
+    margin: 15px 0;
+    font-style: italic;
+    color: #555;
+}
+
+blockquote blockquote {
+    border-color: #ccc;
+    padding-left: 30px;
+}
+
+/* Logout Btn Styling */
+
+.logout-btn {
+    display: inline-block;
+    font-weight: 400;
+    color: #6c757d;
+    text-align: center;
+    vertical-align: middle;
+    user-select: none;
+    background-color: transparent;
+    border: 1px solid #6c757d;
+    padding: 0.25rem 0.55rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    border-radius: 0.2rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.logout-btn:hover {
+    color: #ffffff;
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.logout-wrapper {
+    text-align: end !important;
+}
+
+@media screen and (max-width: 550px) {
+    .logout-btn {
+        width: 100%;
+    }
+
+    .logout-wrapper {
+        justify-content: center !important;
+        max-width: 100%;
+        width: 100%;
+    }
+}
+
+/* ASIDE STYLING */
+aside {
+    margin-top: 18px;
+    overflow-wrap: break-word;
+    max-width: 16.667%;
+    width: 100%;
+    padding-left: 15px;
+    padding-right: 15px;
+    position: relative;
+}
+
+aside a {
+    font-size: 0.8rem;
+}
+
+@media screen and (max-width: 768px) {
+    aside {
+        max-width: 100%;
+        height: 0;
+        width: 0;
+        overflow: hidden;
+        display: none;
+        visibility: hidden;
+        padding: 0;
+    }
+}
+
+aside ol li {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+/* Logo Styling */
+
+.logo-info-flex {
+    position: relative;
+    width: 100%;
+    max-width: 50%;
+    padding-right: 15px;
+    padding-left: 15px;
+    justify-content: flex-end;
+}
+
+.sign-in {
+    visibility: visible;
+    max-width: 40%;
+    text-align: right !important;
+    padding-right: 15px;
+}
+
+.page-header {
+    max-width: 50%;
+    padding-left: 15px;
+    width: 50%
+}
+
+.date-wrapper {
+    text-align: right !important;
+    max-width: 50%;
+    width: 50%;
+    padding-right: 15px;
+    vertical-align: bottom;
+}
+
+
+.date {
+    margin-top: 1.25rem;
+    margin-bottom: 2px;
+    color: #727272;
+    font-size: 0.75rem;
+    font-family: sans-serif;
+}
+
+@media screen and (max-width: 550px) {
+    .page-header {
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .date {
+        display: none;
+    }
+
+    .sign-in {
+        display: none;
+    }
+
+    .logo-info-flex {
+        justify-content: center !important;
+        max-width: 100%;
+    }
+}
+
+.wiki-logo {
+    padding-left: .5rem;
+    font-family: "Playfair Display", Georgia, "Times New Roman", serif;
+    font-weight: 700;
+    font-size: 2.25rem;
+    color: #343a40 !important;
+}
+
+.wiki-logo-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 50%;
+    box-sizing: border-box;
+}
+
+@media screen and (max-width: 550px) {
+    .wiki-logo {
+        text-align: center;
+        padding: 0 !important;
+    }
+
+    .wiki-logo-wrapper {
+        max-width: 100%;
+        text-align: center;
+    }
+}
+
+.wiki-logo:hover {
+    text-decoration: none;
+}
+
+/* Table of Contents Styling */
+
+.toc-1 {
+    margin-left: 10px;
+}
+
+.toc-2 {
+    margin-left: 25px;
+}
+
+.toc-3 {
+    margin-left: 40px;
+}
+
+/* Base Content Container Styling */
+
+.content-container {
+    max-width: 1600px;
+    margin-right: auto;
+    margin-left: auto;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+@media (min-width: 1600px) {
+    body {
+        background-color: #f6f6f6;
+    }
+
+    .content-container {
+        background-color: #ffffff;
+        position: relative;
+        padding-left: 40px;
+        padding-right: 40px;
+    }
+}
+
+/* MISC */
+
+.no-margin {
+    margin: 0 !important;
+}
+
 .header-border {
     border-bottom: 1px solid #aeb1b2 !important;
     margin-bottom: 9px;
 }
+
+/* Editor Nav Menu Styling */
 
 nav {
     z-index: 10;
@@ -269,21 +320,6 @@ nav {
     display: flex;
     justify-content: space-between;
 }
-
-/*#editor {*/
-/*    color: #2a2a2a;*/
-/*    background-color: transparent;*/
-/*    font-family: "Source Code Pro", monospace;*/
-/*    flex: 1;*/
-/*    padding: 5px;*/
-/*    font-size: 12px;*/
-/*    width: 100%;*/
-/*    border: 1px solid #dadada;*/
-/*    resize: none;*/
-/*    margin-top: -10px;*/
-/*    height: 80vh; !* 100% of the viewport height *!*/
-/*    box-sizing: border-box; !* Include padding and border in the element's total height *!*/
-/*}*/
 
 nav .active {
     color: #000000;
@@ -311,8 +347,6 @@ nav a {
     display: inline-block;
     padding-bottom: 1px; /* Adjust this value based on your design */
 }
-
-
 
 nav a:last-child {
     margin-right: 0;
@@ -356,14 +390,6 @@ nav a:hover {
     text-decoration: none;
 }
 
-.date {
-    margin-top: 1.25rem;
-    margin-bottom: 2px;
-    color: #727272;
-    font-size: 0.75rem;
-    font-family: sans-serif;
-}
-
 .wiki-footer {
     padding: 2.5rem 0;
     color: #727272;
@@ -377,8 +403,6 @@ nav a:hover {
 }
 
 /* TABLE STYLING */
-
-/* Basic Table Styling */
 .table-main table {
     width: 100%;
     border-collapse: collapse;
@@ -397,24 +421,21 @@ nav a:hover {
     background-color: #f5f5f5;
 }
 
-/* Striped rows */
 .table-main tbody tr:nth-child(even) {
     background-color: #fff;
 }
 
-/* Table Header Styling */
 .table-main thead {
     background-color: #333;
     color: #fff;
 }
 
-/* Responsive Table Styling */
 @media screen and (max-width: 600px) {
     .table-main table {
         border: 1px solid #ddd;
     }
 
-    .table-main th, td {
+    .table-main th, .table-main td {
         display: block;
         width: 100%;
         box-sizing: border-box;
@@ -425,6 +446,8 @@ nav a:hover {
         background-color: #f5f5f5;
     }
 }
+
+/* INFOBOX STYLING */
 
 .infobox tbody {
     display: table-row-group;
@@ -499,7 +522,20 @@ nav a:hover {
     width: 22em;
 }
 
+@media screen and (max-width: 550px) {
+    .infobox-subtitle {
+        width: 100%;
+        display: table-cell !important;
+    }
 
+    .infobox {
+        margin-bottom: 10px;
+        max-width: 100%;
+        width: 100%;
+    }
+}
+
+/* HOMEPAGE STYLING */
 
 .dashboard-table {
     border-radius: 10px;
@@ -547,50 +583,9 @@ nav a:hover {
     display: contents;
 }
 
-#bottomForm td {
-    font-weight: bold;
-    text-align: center;
-    width: 50%;
-    transition: background-color 0.2s ease;
-    background-color: #f6f6f6;
-}
-
-#bottomForm td:hover {
-    background-color: #e8f1ff !important;
-}
-
-.navbar {
-  background-color: #333;
-  color: #fff;
-  padding: 15px;
-  display: flex;
-  justify-content: space-between;
-}
-
-.hamburger-menu {
-  cursor: pointer;
-  font-size: 20px;
-}
-
-.menu {
-  display: none;
-}
-
-.menu ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.menu li {
-  padding: 10px;
-}
-
-.menu a {
-  text-decoration: none;
-  color: #fff;
-}
-
-.menu a:hover {
-  text-decoration: underline;
+@media screen and (max-width: 1000px) {
+    .dashboard-table {
+        width: 100%;
+        padding: 0;
+    }
 }
