@@ -13,7 +13,7 @@ def send_email(address: str, code: str):
             "to": {
                 "email": f"{address}",
             },
-            "template": "A1YMTTEFBE4F7AHNT2Y4AT3HS4JK",
+            "template": os.getenv('COURIER_TEMPLATE_ID'),
             "data": {
                 "code": f"{code}",
             },
@@ -23,3 +23,5 @@ def send_email(address: str, code: str):
             },
         }
     )
+
+    return resp
