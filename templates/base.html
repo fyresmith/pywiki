@@ -19,13 +19,14 @@
 		<div class="content-container pb-3">
 			<header class="py-3">
                 <div class="row justify-content-between align-items-center">
-                  <div class="col-md-6">
-                      <a class="wiki-header-logo" href="/">The Riveon Wiki</a>
-                  </div>
-                  <div class="col-md-6 d-flex justify-content-end align-items-center">
-                      <p class="col-md-5 m-0 text-secondary text-right">Signed in as <span class="text-primary">{{ first_name }}</span></p>
-                        <form action="/sign-out" method="GET" class="text-end">
-                            <button type="submit" class="wiki-btn">Log Out</button>
+                    <div class="wiki-logo-wrapper">
+                        <a class="wiki-logo" href="/">The Riveon Wiki</a>
+                    </div>
+{#                    <div class="col-md-6 justify-content-end d-flex align-items-center">#}
+                    <div class="logo-info-flex d-flex align-items-center">
+                        <p class="sign-in no-margin text-secondary">Signed in as <span class="text-primary">{{ first_name }}</span></p>
+                        <form action="/sign-out" method="GET" class="logout-wrapper">
+                            <button type="submit" class="logout-btn">Log Out</button>
                         </form>
                     </div>
                 </div>
