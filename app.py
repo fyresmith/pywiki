@@ -9,6 +9,7 @@ from flask import Flask, render_template, request, redirect, make_response, sess
 from datetime import datetime, timedelta, timezone
 import jwt
 from functools import wraps
+from dotenv import load_dotenv
 
 import markdown_fyresmith
 from db import Access
@@ -16,14 +17,16 @@ from mailer import send_email
 import logging
 from backup import backup_db
 
+load_dotenv()
+
 app = Flask(__name__)
-app.secret_key = 'cb55906271b159debefe6e7b7786a22ade3fc1f0be5c38d39b8d8f457c856c70'
+app.secret_key = os.getenv('SECRET_KEY')
 
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s [%(levelname)s] %(message)s',
     handlers=[
-        logging.FileHandler('logs/app.log'),
+        logging.FileHandler(os.getenv('ROOT_FOLDER') + 'logs/app.log'),
         logging.StreamHandler()
     ]
 )
@@ -33,7 +36,7 @@ log = logging.getLogger("app")
 # Backup Threading Logic
 is_backup_thread_active = any(thread.name == "backup_db" and thread.is_alive() for thread in threading.enumerate())
 
-if not is_backup_thread_active:
+if not is_backup_thread_active and os.getenv('SCHEDULE_BACKUP') == 'TRUE':
     log.info('Backup Scheduled.')
     backup_thread = threading.Timer(24 * 3600, backup_db)
     backup_thread.name = "backup_db"
@@ -93,7 +96,6 @@ def token_required(f):
 
         try:
             data = jwt.decode(token, app.secret_key, algorithms=['HS256'])
-            log.info(f'Decoded JWT data: {data}')
 
             user = {
                 'email': data['email'],
@@ -294,35 +296,15 @@ def unlock_page_if_inactive(page: str):
     :return: nothing
     """
 
-    with lock:
-        current_time = time.time()
-        last_update_time = last_update_times.get(page, 0)
+    if page not in pages_being_edited.keys():
+        return
 
-        if current_time - last_update_time >= 20:
-            log.info(f'Page: {page} unlocked due to inactivity.')
-            del pages_being_edited[page]
+    current_time = time.time()
+    last_update_time = last_update_times.get(page, 0)
 
-
-def detect_users():
-    """
-    A thread function which will monitor and manage pages being edited.
-
-    :return: None
-    """
-
-    try:
-        while True:
-            time.sleep(3)
-
-            keys = []
-
-            keys.extend(list(pages_being_edited.keys()))
-
-            for page in keys:
-                unlock_page_if_inactive(page)
-
-    except Exception as e:
-        log.error(f"Error in detect_users: {e}")
+    if current_time - last_update_time >= 20:
+        log.info(f'Page: {page} unlocked due to inactivity.')
+        del pages_being_edited[page]
 
 
 def lock_page(page, email):
@@ -334,13 +316,8 @@ def lock_page(page, email):
     :return: None.
     """
 
-    with lock:
-        pages_being_edited[page] = email
-        last_update_times[page] = time.time()
-
-
-# Start the detect_users thread
-threading.Thread(target=detect_users).start()
+    pages_being_edited[page] = email
+    last_update_times[page] = time.time()
 
 
 @app.route('/active-editor', methods=['POST'])
@@ -351,9 +328,8 @@ def active_editor(user: dict):
 
         log.info(f"Pinged by editor: '{user['email']}' for page: '{page}'")
 
-        with lock:
-            pages_being_edited[page] = user['email']
-            last_update_times[page] = time.time()
+        pages_being_edited[page] = user['email']
+        last_update_times[page] = time.time()
 
         return jsonify({'status': 'success'}), 200
 
@@ -466,8 +442,11 @@ def delete_page(user: dict):
         return render_home_with_modal(title='Access Denied!',
                                       message='You do not have the permissions to delete a page!')
 
+    page = request.args.get('page')
+
+    unlock_page_if_inactive(page)
+
     if request.method == 'POST':
-        page = request.args.get('page')
         page_title = request.form.get('pageTitle')
 
         if page != page_title:
@@ -477,12 +456,10 @@ def delete_page(user: dict):
         if user['role'] == 'admin':
             access = Access('pages')
             access.delete(f'title = "{page_title}"')
-            render_home_with_modal(title='Success!', message=f'Page: "{page}" was successfully deleted!')
+            return render_home_with_modal(title='Success!', message=f'Page: {page} was successfully deleted!')
         else:
             return render_home_with_modal(title='Access Denied!', message='You do not have the permissions to delete a page!')
     else:
-        page = request.args.get('page')
-
         if page in pages_being_edited.keys() and pages_being_edited[page] != user['email']:
             log.info(f'{user["email"]} attempted to access deletion page for page: {page} but was denied access.')
 
@@ -490,7 +467,7 @@ def delete_page(user: dict):
                                           message='Page deletion is not allowed while the page is being edited. Please '
                                                   'wait for the editor to finish.')
         elif user['role'] != 'admin':
-            render_page_with_modal(page, title='Access Denied!',
+            return render_page_with_modal(page, title='Access Denied!',
                                    message='You do not have the permissions to delete a page!')
         else:
             log.debug('Rendering the "delete-page.html" template for GET request.')
@@ -515,7 +492,9 @@ def update_page_name(user: dict):
     new_page = request.form.get('new_page')
     page = request.form.get('page')
 
-    if pages_being_edited[page] != user['email']:
+    unlock_page_if_inactive(page)
+
+    if page in pages_being_edited.keys() and pages_being_edited[page] != user['email']:
         return render_page_with_modal(page, title='Access Denied!',
                                       message='Your update request was denied because you are not currently editing '
                                               'the document!')
@@ -528,6 +507,9 @@ def update_page_name(user: dict):
             log.warning('Attempt to update page name to an existing title.')
             return None
         else:
+            del pages_being_edited[page]
+            pages_being_edited[new_page.strip()] = user['email']
+
             access.update(['title'], [new_page.strip()], f'title = "{page}"')
             log.info(f'Page title updated: {page} -> {new_page}')
             return redirect(f'/editor?page={new_page}', code=302)
@@ -551,7 +533,9 @@ def update_page_category(user: dict):
     category = request.form.get('new_category')
     page = request.form.get('page')
 
-    if pages_being_edited[page] != user['email']:
+    unlock_page_if_inactive(page)
+
+    if page in pages_being_edited.keys() and pages_being_edited[page] != user['email']:
         return render_page_with_modal(page, title='Access Denied!',
                                       message='Your update request was denied because you are not currently editing '
                                               'the document!')
@@ -585,6 +569,8 @@ def editor(user: dict):
     if user['role'] != 'admin' and user['role'] != 'editor':
         return render_page_with_modal(page, title='Access Denied!', message='You do not have the permissions to '
                                                                             'access the editor for this page!')
+
+    unlock_page_if_inactive(page)
 
     if page in pages_being_edited.keys() and pages_being_edited[page] != user['email']:
         log.info(f'{user["email"]} attempted to access editor for page: {page} but was denied access.')
