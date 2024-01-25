@@ -1,13 +1,17 @@
+import os
 import sqlite3
 import logging
 from sqlite3 import Error
 from typing import List
+from dotenv import load_dotenv
+
+load_dotenv()
 
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s [%(levelname)s] %(message)s',
     handlers=[
-        logging.FileHandler('logs/app.log'),
+        logging.FileHandler(os.getenv('ROOT_FOLDER') + 'logs/app.log'),
         logging.StreamHandler()
     ]
 )
@@ -82,7 +86,7 @@ class DB:
 
         return connection
 
-    def get_connection(self, reset=None):
+    def get_connection(self, reset=True):
         """
         Retrieves the existing SQLite database connection or creates a new one if needed.
 
@@ -92,14 +96,15 @@ class DB:
         :return: The SQLite database connection.
         :rtype: sqlite3.Connection or None
         """
-        # if reset is not None or self.connection is None:
-            # self.connection = None
-            # self.connection = self.create_connection(f'data/data.db')
-        return self.create_connection(f'data/data.db')
-        # else:
-        #     return self.connection
+        if reset is not None or self.connection is None:
+            self.__instance.connection = None
+            self.__instance.connection = self.create_connection(f'data/data.db')
+            return self.__instance.connection
+        else:
+            return self.__instance.connection
 
 
+# TODO: Sanitize User Input
 class Access:
     """
     Class for handling basic CRUD operations on a SQLite database table.
@@ -129,18 +134,16 @@ class Access:
         :return: None
         """
         conn = DB.get_instance().get_connection()
-        cursor = conn.cursor()
 
-        columns_str = ', '.join(columns)
-        placeholders = ', '.join(['?' for _ in values])
-        query = f'INSERT INTO {self.table} ({columns_str}) VALUES ({placeholders})'
+        query = f'INSERT INTO {self.table} ({", ".join(columns)}) VALUES ({", ".join([":param_" + str(i) for i in range(len(values))])})'
+
+        params = {f'param_{i}': value for i, value in enumerate(values)}
 
         try:
-            cursor.execute(query, values)
-            conn.commit()
+            conn.execute(query, params)
             log.info('Data inserted successfully!')
-        except sqlite3.Error as e:
-            log.error(f'Error inserting data: {e}')
+        except Exception as e:
+            log.info(f'Error inserting data: {e}')
 
     def select(self, columns=None, condition=None) -> List[list]:
         """
@@ -189,17 +192,17 @@ class Access:
         :return: None
         """
         conn = DB.get_instance().get_connection()
-        cursor = conn.cursor()
 
-        set_clause = ', '.join([f'{col} = ?' for col in update_columns])
+        set_clause = ', '.join([f'{col} = :param_{i}' for i, col in enumerate(update_columns)])
+
         query = f'UPDATE {self.table} SET {set_clause} WHERE {condition}'
 
-        try:
-            cursor.execute(query, new_values)
-            conn.commit()
-            log.info('Data updated successfully!')
+        params = {f'param_{i}': value for i, value in enumerate(new_values)}
 
-        except sqlite3.Error as e:
+        try:
+            conn.execute(query, params)
+            log.info('Data updated successfully!')
+        except Exception as e:
             log.info(f'Error updating data: {e}')
 
     def delete(self, condition):
@@ -236,34 +239,23 @@ class Access:
         :rtype: bool
         """
         conn = DB.get_instance().get_connection()
-        c = conn.cursor()
 
-        query = f'SELECT COUNT(1) FROM {self.table} WHERE {column}=?'
-        c.execute(query, (value,))
+        query = f'SELECT COUNT(1) FROM {self.table} WHERE {column} = :param_value'
 
-        if c.fetchone()[0] == 1:
-            return True
-        else:
-            return False
-
-    def unique_pk(self):
-        """
-        Generates a unique primary key value by temporarily inserting a dummy row.
-
-        :return: The next unique primary key value.
-        :rtype: int or None
-        """
-        conn = DB.get_instance().get_connection()
-        c = conn.cursor()
+        # Bind parameter to the query
+        params = {'param_value': value}
 
         try:
-            c.execute(f'INSERT INTO {self.table} (name, income) VALUES ("DUMMY", 9999)')
-            next_value = c.lastrowid
-            conn.rollback()
+            cursor = conn.cursor()
+            cursor.execute(query, params)
 
-            return next_value
-        except sqlite3.Error as e:
-            log.info(f"Error: {e}")
+            if cursor.fetchone()[0] == 1:
+                return True
+            else:
+                return False
+        except Exception as e:
+            log.info(f'Error checking existence: {e}')
+            return False
 
 
 def create_tables():
