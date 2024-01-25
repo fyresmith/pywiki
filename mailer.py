@@ -1,8 +1,12 @@
 from trycourier import Courier
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 def send_email(address: str, code: str):
-    client = Courier(auth_token="INSERT_COURIER_KEY_HERE")
+    client = Courier(auth_token=os.getenv('COURIER_API_TOKEN'))
 
     resp = client.send_message(
         message={
