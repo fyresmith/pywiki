@@ -3,7 +3,7 @@ I didn't particularly like MediaWiki, so I built my own wiki platform. PyWiki is
 
 # Features
 ## Simple, Yet Strong Security
-PyWiki uses many simple security practices expected with modern platforms. PyWiki requires two-factor authentication each time a user signs in, and uses a JWT system in order to keep users securely signed in for 24 hours. PyWiki also is careful to sanitize every input given by the user in order to avoid SQL injection attacks. PyWiki also implements rate limiting in some cases in order to prevent users from promulgating DOS attacks. Finally, PyWiki also hashes the passwords within the database to ensure that even if an attacker manages to achieve access to the database, the attacker will not be able to access a user's account.
+PyWiki uses many simple security practices expected with modern platforms. PyWiki requires two-factor authentication each time a user signs in, and uses a JWT system in order to keep users securely signed in for 24 hours. PyWiki also is careful to prevent SQL injection attacks via query parameterization. PyWiki also implements rate limiting in some cases in order to prevent users from promulgating DOS attacks.
 
 ## Markdown Editor
 PyWiki uses a specialized version of John Grubers [Markdown](https://daringfireball.net/projects/markdown/syntax) as a raw form of text for each wiki page. Once a page is requested, the python backend takes the stored markdown, renders it as HTML, and returns a completed HTML page to the user. Given a user has the privelages, they may edit those pages directly from the application. The editor is a simply and specially-designed javascript text editor which provides highlighting to sections which will be rendered as HTML elements.
