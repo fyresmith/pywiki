@@ -141,6 +141,7 @@ class Access:
 
         try:
             conn.execute(query, params)
+            conn.commit()
             log.info('Data inserted successfully!')
         except Exception as e:
             log.info(f'Error inserting data: {e}')
@@ -172,6 +173,7 @@ class Access:
 
         try:
             cursor.execute(query)
+            conn.commit()
             rows = cursor.fetchall()
             return rows
 
@@ -201,6 +203,7 @@ class Access:
 
         try:
             conn.execute(query, params)
+            conn.commit()
             log.info('Data updated successfully!')
         except Exception as e:
             log.info(f'Error updating data: {e}')
@@ -248,6 +251,7 @@ class Access:
         try:
             cursor = conn.cursor()
             cursor.execute(query, params)
+            conn.commit()
 
             if cursor.fetchone()[0] == 1:
                 return True
