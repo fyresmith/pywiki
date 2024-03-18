@@ -19,20 +19,100 @@ function saveToFile() {
     document.body.removeChild(link);
 }
 
+
+function updatePageName() {
+    let new_page = document.getElementById('page_title');
+    let page = document.getElementById('page');
+    let page_title = document.getElementById('top_title');
+
+    new_page.value = new_page.value.trim()
+
+    // Create a FormData object and append form data
+    let formData = new FormData();
+    formData.append('action', 'save');
+    formData.append('new_page', new_page.value);
+    formData.append('page', page.value);
+
+    // Make a POST request using Fetch API
+    fetch('/update-page-name', { method: 'POST', body: formData })
+        .then(response => {
+            if (response.ok) {
+                // showMessage('Updated Title', 'success');
+                console.log('POST request successful');
+                page.value = new_page.value
+                page_title.innerText = new_page.value
+                history.pushState({}, '', '/editor?page=' + new_page.value);
+            } else {
+                // showMessage('Title Already Exists', 'danger');
+                new_page.value = page.value
+                console.error('POST request failed');
+            }
+        })
+        .catch(error => {
+            showMessage('Failed to Update', 'danger');
+            console.error('Error in POST request:', error);
+        });
+}
+
+function updateCategoryName() {
+    let new_category = document.getElementById('page_category');
+
+    let page = document.getElementById('page');
+    let category = document.getElementById('category');
+
+    new_category.value = new_category.value.trim()
+
+    // Create a FormData object and append form data
+    let formData = new FormData();
+    formData.append('action', 'save');
+    formData.append('new_category', new_category.value);
+    formData.append('page', page.value);
+
+    // Make a POST request using Fetch API
+    fetch('/update-page-category', { method: 'POST', body: formData })
+        .then(response => {
+            if (response.ok) {
+                // showMessage('Updated Categories', 'success');
+                console.log('POST request successful');
+                category.value = new_category.value
+                history.pushState({}, '', '/editor?page=' + new_category.value);
+            } else {
+                // showMessage('Failed to Update', 'danger');
+                new_category.value = category.value
+                console.error('POST request failed');
+            }
+        })
+        .catch(error => {
+            showMessage('Failed to Update', 'danger');
+            console.error('Error in POST request:', error);
+        });
+}
+
 function saveData() {
+    let category = document.getElementById('page_category');
+    let title = document.getElementById('page_title');
     let editor = document.getElementById('editor');
     let page = document.getElementById('page');
+    let OLD_category = document.getElementById('category');
+    let page_title = document.getElementById('top_title');
+
+    category.value = category.value.trim()
+    title.value = title.value.trim()
 
     // Create a FormData object and append form data
     let formData = new FormData();
     formData.append('editorContent', editor.value);
     formData.append('page', page.value);
+    formData.append('category', category.value);
+    formData.append('title', title.value);
 
     // Make a POST request using Fetch API
     fetch('/save-file', { method: 'POST', body: formData })
         .then(response => {
             if (response.ok) {
                 showMessage('Saved', 'success');
+                page.value = title.value
+                page_title.innerText = title.value
                 console.log('POST request successful');
             } else {
                 showMessage('Failed to Save, Downloading Backup', 'danger');
@@ -114,73 +194,6 @@ function debounce(func, delay) {
         clearTimeout(timeoutId);
         timeoutId = setTimeout(() => func.apply(context, args), delay);
     };
-}
-
-function updatePageName() {
-    let new_page = document.getElementById('page_title');
-    let page = document.getElementById('page');
-    let page_title = document.getElementById('top_title');
-
-    new_page.value = new_page.value.trim()
-
-    // Create a FormData object and append form data
-    let formData = new FormData();
-    formData.append('action', 'save');
-    formData.append('new_page', new_page.value);
-    formData.append('page', page.value);
-
-    // Make a POST request using Fetch API
-    fetch('/update-page-name', { method: 'POST', body: formData })
-        .then(response => {
-            if (response.ok) {
-                showMessage('Updated Title', 'success');
-                console.log('POST request successful');
-                page.value = new_page.value
-                page_title.innerText = new_page.value
-                history.pushState({}, '', '/editor?page=' + new_page.value);
-            } else {
-                showMessage('Title Already Exists', 'danger');
-                new_page.value = page.value
-                console.error('POST request failed');
-            }
-        })
-        .catch(error => {
-            showMessage('Failed to Update', 'danger');
-            console.error('Error in POST request:', error);
-        });
-}
-
-function updateCategoryName() {
-    let new_category = document.getElementById('page_category');
-    let page = document.getElementById('page');
-    let category = document.getElementById('category');
-
-    new_category.value = new_category.value.trim()
-
-    // Create a FormData object and append form data
-    let formData = new FormData();
-    formData.append('action', 'save');
-    formData.append('new_category', new_category.value);
-    formData.append('page', page.value);
-
-    // Make a POST request using Fetch API
-    fetch('/update-page-category', { method: 'POST', body: formData })
-        .then(response => {
-            if (response.ok) {
-                showMessage('Updated Categories', 'success');
-                console.log('POST request successful');
-                category.value = new_category.value
-                history.pushState({}, '', '/editor?page=' + new_category.value);
-            } else {
-                showMessage('Failed to Update', 'danger');
-                new_category.value = category.value
-                console.error('POST request failed');
-            }
-        })
-        .catch(error => {
-            showMessage('Failed to Update', 'danger');
-            console.error('Error in POST request:', error);
-        });
 }
 
 // document.addEventListener('keydown', function(event) {
@@ -270,5 +283,5 @@ function updateHighlightedLines(textarea) {
 
 monitorTextarea('editor');
 window.onload = showMessage('Editor Loaded', 'success');
-document.getElementById('page_title').addEventListener('input', debounce(updatePageName, 500));
-document.getElementById('page_category').addEventListener('input', debounce(updateCategoryName, 500));
+// document.getElementById('page_title').addEventListener('input', debounce(updatePageName, 500));
+// document.getElementById('page_category').addEventListener('input', debounce(updateCategoryName, 500));
