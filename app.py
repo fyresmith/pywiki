@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 
 import markdown_fyresmith
 from db import Access
-from mailer import send_email
+from mailer import send_email, send_message
 import logging
 from backup import backup_db
 
@@ -21,6 +21,8 @@ load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY')
+
+time_check = datetime.now()
 
 logging.basicConfig(
     level=logging.INFO,
@@ -320,6 +322,28 @@ def lock_page(page, email):
     last_update_times[page] = time.time()
 
 
+# @app.route('/sendemail', methods=['POST'])
+# def send_email():
+#     global time_check
+
+#     rate_limiter = (datetime.now() - time_check).total_seconds() >= 20 if time_check else False
+
+#     if not rate_limiter:
+#         return 'failure'
+
+#     time_check = datetime.now()
+
+#     data = request.get_json()
+#     first = data.get('first')
+#     last = data.get('last')
+#     email_address = data.get('email_address')
+#     message = data.get('message')
+
+#     send_message(first, last, email_address, message)
+
+#     return 'success'
+
+
 @app.route('/active-editor', methods=['POST'])
 @token_required
 def active_editor(user: dict):
@@ -374,13 +398,18 @@ def save_file(user: dict):
     :rtype: Response
     """
     content = request.form.get('editorContent')
+    category = request.form.get('category')
+    title = request.form.get('title')
     page = request.form.get('page')
 
     if pages_being_edited[page] == user['email']:
         access = Access('pages')
-        access.update(['markdown'], [content], f'title = "{page}"')
+        access.update(['markdown', 'title', 'category'], [content, title, category], f'title = "{page}"')
 
         log.info('File was saved.')
+
+        del pages_being_edited[page]
+        pages_being_edited[title.strip()] = user['email']
 
         return redirect(f'/editor?page={page}', code=302)
     else:
@@ -414,6 +443,9 @@ def create_page(user: dict):
         if len(select) != 0:
             log.warning(f'User {user["email"]} attempted to create a page with an existing title.')
             return render_template('create-page.html', message='That page already exists!')
+        elif '&' in page_title:
+            log.warning(f'User {user["email"]} attempted to create a page with an illegal character ("&").')
+            return render_template('create-page.html', message='You cannot create a title with the character "&"!')
         else:
             access.insert(['title', 'markdown', 'date', 'editor', 'category'],
                           [page_title, markdown_fyresmith.DEFAULT_MARKDOWN,
@@ -625,6 +657,9 @@ def get_page(user: dict):
 
     page_list = get_page_list()
 
+    # log.info(page_list)
+    # log.info(page)
+
     if page not in page_list:
         return render_template('404.html')
 
@@ -747,6 +782,7 @@ def sign_in():
 
         if user is not None:
             session['code'] = generate_random_code()
+            print(session.get('code'))
             send_email(email, session.get('code'))
             log.info(f'User {email} successfully authenticated. Verification code sent.')
 
