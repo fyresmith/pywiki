@@ -4,6 +4,8 @@ import markdown
 from markdown.preprocessors import Preprocessor
 from markdown.extensions import Extension
 from markdown.extensions.extra import ExtraExtension
+from markdown.extensions.wikilinks import WikiLinkExtension
+from markdown.extensions.sane_lists import SaneListExtension
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 load_dotenv()
@@ -116,6 +118,10 @@ class InfoBoxExtension(Extension):
 
 
 class InfoBoxProcessor(Preprocessor):
+    def __init__(self, md):
+        super().__init__(md)
+        self.inner_md = markdown.Markdown(extensions=[WikiLinkExtension(base_url='/page?page=', end_url=''), ExtraExtension(), SaneListExtension()])
+
     def run(self, lines):
         new_lines = []
         in_braces = False
@@ -152,6 +158,8 @@ class InfoBoxProcessor(Preprocessor):
             return f'<tr><th class="infobox-subtitle" colspan="2">{line[4:]}</th></tr>'
         elif '|' in line:
             item, value = map(str.strip, line.split('|', 1))
+            # Process value as Markdown using a separate instance
+            value = self.inner_md.convert(value).replace('<p>', '').replace('</p>', '')
             return f'<tr><th scope="row" class="infobox-label">{item}</th><td class="infobox-data">{value}</td></tr>'
         else:
             # Handle other cases as needed
@@ -373,8 +381,13 @@ def to_html(markdown_string, date, editor, title, page_list, role):
     link_list.remove(title)
 
     md = markdown.Markdown(
-        extensions=[InfoBoxExtension(), TableExtension(), TableOfContentsExtension(), LinkifyExtension(words=link_list),
-                    ExtraExtension(), 'sane_lists'])
+        extensions=[InfoBoxExtension(), TableExtension(), TableOfContentsExtension(), WikiLinkExtension(base_url='/page?page=', end_url=''),
+                    ExtraExtension(), SaneListExtension()])
+
+    # md = markdown.Markdown(
+    #     extensions=[InfoBoxExtension(), TableExtension(), TableOfContentsExtension(), LinkifyExtension(words=link_list),
+    #                 ExtraExtension(), 'sane_lists'])
+
     md.postprocessors.register(HeaderAdvancerExtension(), "header_advancer", 0)
     html_output = md.convert(markdown_string)
     table_of_contents = getattr(md, 'table_of_contents', [])
