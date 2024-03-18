@@ -11,6 +11,8 @@ from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
 LOCAL_BACKUP_FOLDER = 'backups'
 LOCAL_DATA_FOLDER = 'data'
 DB_PATH = f'{LOCAL_DATA_FOLDER}/data.db'
+SERVICE_CREDENTIALS = os.getenv('ROOT_FOLDER') + os.getenv('SERVICE_CREDENTIALS')
+BACKUP_FOLDER_ID = os.getenv('BACKUP_FOLDER_ID')
 load_dotenv()
 
 # Configure logging
@@ -25,11 +27,10 @@ logging.basicConfig(
 
 log = logging.getLogger("app")
 
-
 def backup_db():
     # Load credentials from the JSON file
     credentials = service_account.Credentials.from_service_account_file(
-        os.getenv('SERVICE_CREDENTIALS'),
+        SERVICE_CREDENTIALS,
         scopes=['https://www.googleapis.com/auth/drive']
     )
 
@@ -46,7 +47,7 @@ def backup_db():
     new_file_name = f'{file_name}_{timestamp}{file_extension}'
 
     # Set file metadata and content
-    file_metadata = {'name': new_file_name, 'parents': [os.getenv('BACKUP_FOLDER_ID')]}
+    file_metadata = {'name': new_file_name, 'parents': [BACKUP_FOLDER_ID]}
     media = MediaFileUpload(DB_PATH, resumable=True)
 
     # Upload the file
@@ -62,7 +63,7 @@ def backup_db():
 def download_latest_backup():
     # Load credentials from the JSON file
     credentials = service_account.Credentials.from_service_account_file(
-        os.getenv('SERVICE_CREDENTIALS'),
+        SERVICE_CREDENTIALS,
         scopes=['https://www.googleapis.com/auth/drive']
     )
 
@@ -71,7 +72,7 @@ def download_latest_backup():
 
     try:
         # List files in the backup folder
-        results = drive_service.files().list(q=f"'{os.getenv('BACKUP_FOLDER_ID')}' in parents", orderBy='createdTime desc', fields='files(id, name)').execute()
+        results = drive_service.files().list(q=f"'{BACKUP_FOLDER_ID}' in parents", orderBy='createdTime desc', fields='files(id, name)').execute()
         files = results.get('files', [])
 
         if not files:
@@ -104,7 +105,7 @@ def download_latest_backup():
 def delete_old_backups():
     # Load credentials from the JSON file
     credentials = service_account.Credentials.from_service_account_file(
-        os.getenv('SERVICE_CREDENTIALS'),
+        SERVICE_CREDENTIALS,
         scopes=['https://www.googleapis.com/auth/drive']
     )
 
@@ -116,7 +117,7 @@ def delete_old_backups():
         deletion_date = datetime.utcnow() - timedelta(minutes=3)
 
         # List files in the backup folder
-        results = drive_service.files().list(q=f"'{os.getenv('BACKUP_FOLDER_ID')}' in parents", fields='files(id, name, createdTime)').execute()
+        results = drive_service.files().list(q=f"'{BACKUP_FOLDER_ID}' in parents", fields='files(id, name, createdTime)').execute()
         files = results.get('files', [])
 
         if not files:
@@ -139,7 +140,7 @@ def delete_old_backups():
 def rollback_db():
     # Load credentials from the JSON file
     credentials = service_account.Credentials.from_service_account_file(
-        os.getenv('SERVICE_CREDENTIALS'),
+        SERVICE_CREDENTIALS,
         scopes=['https://www.googleapis.com/auth/drive']
     )
 
@@ -148,7 +149,7 @@ def rollback_db():
 
     try:
         # List files in the backup folder
-        results = drive_service.files().list(q=f"'{os.getenv('BACKUP_FOLDER_ID')}' in parents", orderBy='createdTime desc', fields='files(id, name)').execute()
+        results = drive_service.files().list(q=f"'{BACKUP_FOLDER_ID}' in parents", orderBy='createdTime desc', fields='files(id, name)').execute()
         files = results.get('files', [])
 
         if not files:
